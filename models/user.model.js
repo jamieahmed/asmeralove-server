@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 const { Schema } = mongoose;
 
 // Define enums
@@ -157,7 +158,26 @@ const userSchema = new Schema({
         maxlength: 100,
         trim: true,
     },
+    // Add the auth token field
+    authToken: {
+        type: String,
+        default: ''
+    },
 });
+
+// Add the generateAuthToken method to the userSchema
+userSchema.methods.generateAuthToken = async function () {
+    try {
+        // Generate a new token
+        const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET_KEY);
+        // Save the token to the user's authToken field
+        this.authToken = token;
+        await this.save();
+        return token;
+    } catch (error) {
+        throw new Error('Error generating auth token');
+    }
+};
 
 // Export User model
 export default mongoose.model('User', userSchema);
