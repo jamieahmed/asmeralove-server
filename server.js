@@ -2,6 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
+// Require the routes for each model
+import { publicRouter, privateRouter } from './routes/user.routes.js';
+
+
 // Load environment variables from .env file
 dotenv.config();
 
@@ -28,7 +32,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Define routes
-// TODO: Add your routes here
+// Use the public routes
+app.use('/api', publicRouter);
+
+// Use the private routes
+app.use('/api', privateRouter);
+
+
 
 // Start the server
 app.listen(port, () => {
